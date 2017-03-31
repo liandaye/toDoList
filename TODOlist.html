@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+	<link rel="stylesheet" href="css/kuangjia.css">
+</head>
+<body>
+	<header class="head-box">
+		<div class="header">
+			<div class="logo">ToDoList</div>
+			<input type="text" class="add" placeholder="添加todo" autofocus>
+		</div>
+	</header>
+	<section class="now">
+		<header>
+			<h4 class="title">正在进行</h4>
+			<span class="num">0</span>
+		</header>
+		<ul class="list">
+
+		</ul>
+	</section>
+	<section class="complete">
+		<header>
+			<h4 class="title">已经完成</h4>
+			<span class="num">0</span>
+		</header>
+		<ul class="list">
+
+		</ul>
+	</section>
+
+
+</body>
+</html>
+<script>
+//	var todo=[
+//		{
+//		    title:"中午写作业",
+//			done:false
+//		},
+//        {
+//            title:"中午写作业",
+//            done:false
+//        },
+//        {
+//            title:"中午敲代码",
+//            done:true
+//        }
+//	];
+	var  nowL=$('.now .list');
+	var  comL=$('.complete .list');
+    var  nowNum=$('.now .num');
+	var  comNum=$('.complete .num');
+	var  add=$('.add');
+
+	function setItem(aa) {
+
+		localStorage.setItem('abc',JSON.stringify(aa));
+	}
+	var todo=getItem();
+    function getItem() {
+//        获取后台
+        var todo=localStorage.getItem('abc')||'[]';
+        return JSON.parse(todo);
+    }
+
+    add.onkeydown=function(e){
+        if(e.keyCode==13){
+            if(add.value==""){
+		        alert('不能输入空')
+			}else {
+				jia(this.value);
+				this.value=""
+			}
+		}
+    };
+function jia(t) {
+	todo.unshift({
+	    title:t,
+		done:false
+	});
+    setItem(todo);
+    reload()
+}
+
+
+	reload();
+	function reload() {
+	    var nowStr="";
+	    var comStr="";
+	    var ns=0;
+	    var cs=0;
+		for(var i=0;i<todo.length;i++){
+			if(todo[i].done==false){
+			    ns++;
+			    nowStr+='<li>'+
+                '<input type="checkbox" onclick=change('+i+',"done",true)>'+
+                    '<p contenteditable="true" onblur=change('+i+',"title",this.innerHTML)>'+todo[i].title+'</p>'+
+                    '<div class="fu" onclick=del('+i+')>-</div>'+
+                    '</li>';
+			}else {
+			    cs++;
+                comStr+='<li>'+
+                    '<input type="checkbox" checked onclick=change('+i+',"done",false)>'+
+                    '<p>'+todo[i].title+'</p>'+
+                    '<div class="fu" onclick=del('+i+')>-</div>'+
+                    '</li>';
+			}
+		}
+		nowL.innerHTML=nowStr;
+		comL.innerHTML=comStr;
+		nowNum.innerHTML=ns;
+		comNum.innerHTML=cs;
+    }
+	function del(i) {
+		todo.splice(i,1);
+        setItem(todo);
+        reload();
+    }
+   function change(i,key,val) {
+	   todo[i][key]=val;
+       setItem(todo);
+       reload()
+   }
+	function $(a) {
+		return document.querySelector(a);
+    }
+</script>
